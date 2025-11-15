@@ -1,2 +1,1 @@
-# me369finalproj
-ME369 Final Project
+# ME369 Final Project
