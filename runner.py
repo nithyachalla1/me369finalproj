@@ -262,12 +262,15 @@ def game_loop(total_coins):
                 elif event.key == pygame.K_3:
                     # blue skin, costs 5 coins
                     cost = 5
-                    if total_coins >= cost:
-                        total_coins -= cost
-                        player_color = (60, 120, 255)
-                        message = "Bought & equipped: Blue (-5 coins)"
+                    if not red_unlocked:
+                        if total_coins >= cost:
+                            total_coins -= cost
+                            player_color = (60, 120, 255)
+                            message = "Bought & equipped: Blue (-5 coins)"
+                        else:
+                            message = "Not enough coins for Blue (5)"
                     else:
-                        message = "Not enough coins for Blue (5)"
+                        message = "Blue already unlocked"
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     running = False
 
@@ -316,3 +319,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
