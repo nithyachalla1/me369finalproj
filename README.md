@@ -47,9 +47,10 @@ In order to download all the files from the repo into one folder, click the code
 <br>
 <br>
 
-## How to Run the Game (WINDOWS VERSION)
+## How to Run the Game (WINDOWS TERMINAL VERSION)
+MAKE SURE PYTHON 3.11 IS INSTALLED. IT IS NECESSARY TO USE MEDIAPIPE AND RUN THE GAME
 
-1) Open your PREFERRED terminal (Conda, Command Prompt, etc.)
+1) Open your preferred terminal (Conda, Command Prompt, VS Code, etc.)
 2) Navigate to your game directory in terminal:
 
 ```
@@ -73,8 +74,35 @@ python game_test_2.py
 <br>
 <br>
 
+## How to Run the Game (SPYDER VERSION)
+MAKE SURE PYTHON 3.11 IS INSTALLED. IT IS NECESSARY TO USE MEDIAPIPE AND RUN THE GAME
+
+1) Open the terminal in Spyder
+2) Navigate to your game directory in terminal:
+
+```
+os.chrdir("path/to/game_folder")
+```
+3) Install dependencies
+
+```
+pip install -r requirements.txt
+```
+
+4) Run the game:
+
+```
+python game_test_2.py
+```
+
+5) A camera window will appear. Show your hand clearly 
+6) Press C once to calibrate center position
+7) The game window opens automatically. Use L-hand gesture to start
+<br>
+<br>
 
 ## How to Run the Game (LINUX VERSION)
+MAKE SURE PYTHON 3.11 IS INSTALLED. IT IS NECESSARY TO USE MEDIAPIPE AND RUN THE GAME
 
 1) Open the terminal 
 2) Install required packages:
