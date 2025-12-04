@@ -1067,7 +1067,7 @@ def main():
     player_car_files = [
         "PlayerRedM.png",
         "Blue Player Car.png",
-        "WR Player Car  Scaled.png",
+        "WR Player Car Scaled.png",
         "Police Player Car.png",
     ]
     for filename in player_car_files:
@@ -1161,3 +1161,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
