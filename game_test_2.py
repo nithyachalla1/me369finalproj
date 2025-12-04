@@ -766,8 +766,8 @@ def shop_loop(detector):
 
         police_status = " [OWNED]" if 3 in unlocked_skins else " (100 coins)"
         option3_color = (300, 50, 255) if 3 in unlocked_skins else TEXT_COLOR
-        option3 = font.render(f"3 Fingers - Police Car{police_status}", True, option3_color)
-        screen.blit(option3, (60, line_y + line_spacing))
+        option3 = font.render(f"4 Fingers - Police Car{police_status}", True, option3_color)
+        screen.blit(option3, (60, line_y + 2 * line_spacing))
         
         controls_y = HEIGHT - 150
         draw_text_center(screen, start_text, small_font, (100, 255, 100), controls_y)
@@ -1161,4 +1161,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
