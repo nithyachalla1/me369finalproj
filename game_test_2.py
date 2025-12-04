@@ -15,11 +15,11 @@ FPS = 60
 NUM_LANES = 3
 LANE_WIDTH = WIDTH // NUM_LANES
 
-PLAYER_WIDTH = 50
+PLAYER_WIDTH = 80
 PLAYER_HEIGHT = 80
 PLAYER_Y = HEIGHT - PLAYER_HEIGHT - 30
 
-OBSTACLE_WIDTH = 50
+OBSTACLE_WIDTH = 80
 OBSTACLE_HEIGHT = 80
 OBSTACLE_SPEED = 7
 OBSTACLE_SPAWN_TIME = 900
@@ -28,9 +28,9 @@ COIN_SIZE = 50
 COIN_SPAWN_TIME = 1000
 
 POWERUP_SIZE = 60
-POWERUP_MIN_SPAWN_TIME = 10000
-POWERUP_MAX_SPAWN_TIME = 25000
-POWERUP_DURATION = 5000
+POWERUP_MIN_SPAWN_TIME = 2000
+POWERUP_MAX_SPAWN_TIME = 5000
+POWERUP_DURATION = 3000
 
 BG_COLOR = (10, 10, 25)
 LANE_COLOR = (60, 60, 90)
@@ -72,84 +72,18 @@ def load_animation_frames(filename, width, height, frame_count):
         return None
     try:
         print(f"Attempting to load animation: {filename}")
-        sprite_sheet = pygame.image.load(filename).convert_alpha()
+        sprite_sheet = pygame.image.load(filename)
         sheet_width = sprite_sheet.get_width()
         sheet_height = sprite_sheet.get_height()
-
-        known_ranges_69 = [
-            (11, 17), (41, 47), (71, 77), (100, 107), (128, 138), (158, 168),
-            (186, 199), (215, 230), (244, 261), (273, 290), (304, 315),
-            (334, 345), (364, 381), (394, 411), (429, 450), (459, 480),
-            (490, 509), (523, 545), (555, 575), (584, 603), (617, 637),
-            (645, 666), (674, 696), (705, 728), (736, 758), (766, 787),
-            (795, 816), (824, 846), (854, 875), (883, 905), (913, 934),
-            (942, 964), (972, 993), (1001, 1023), (1031, 1053), (1061, 1082),
-            (1090, 1111), (1119, 1141), (1149, 1170), (1178, 1200),
-            (1208, 1229), (1237, 1259), (1267, 1288), (1296, 1317),
-            (1325, 1347), (1355, 1376), (1384, 1405), (1413, 1435),
-            (1443, 1464), (1472, 1493), (1501, 1523), (1531, 1552),
-            (1560, 1581), (1589, 1611), (1619, 1640), (1648, 1669),
-            (1677, 1698), (1706, 1727), (1735, 1756), (1764, 1785),
-            (1793, 1814), (1822, 1844), (1852, 1873), (1881, 1902),
-            (1910, 1931), (1939, 1960), (1968, 1989)
-        ]
-
+        frame_width = sheet_width // frame_count
         frames = []
-
-        if (frame_count == 69) or (sheet_width == 2048 and sheet_height <= 40):
-            ranges = known_ranges_69
-            for (x1, x2) in ranges:
-                x1_clamped = max(0, min(sheet_width - 1, x1))
-                x2_clamped = max(0, min(sheet_width - 1, x2))
-                w_rect = x2_clamped - x1_clamped + 1
-                rect = pygame.Rect(x1_clamped, 0, w_rect, sheet_height)
-                frame = sprite_sheet.subsurface(rect).copy()
-                scaled = pygame.transform.scale(frame, (width, height))
-                frames.append(scaled)
-            print(f"Loaded {len(frames)} frames using known ranges from {filename}")
-            return frames
-
-        if frame_count > 0 and (sheet_width % frame_count == 0):
-            frame_w = sheet_width // frame_count
-            for i in range(frame_count):
-                rect = pygame.Rect(i * frame_w, 0, frame_w, sheet_height)
-                frame = sprite_sheet.subsurface(rect).copy()
-                frames.append(pygame.transform.scale(frame, (width, height)))
-            print(f"Loaded {len(frames)} equal-width frames from {filename}")
-            return frames
-
-        columns_nonempty = [False] * sheet_width
-        for x in range(sheet_width):
-            for y in range(sheet_height):
-                if sprite_sheet.get_at((x, y))[3] != 0:
-                    columns_nonempty[x] = True
-                    break
-
-        runs = []
-        in_run = False
-        run_start = 0
-        for x, val in enumerate(columns_nonempty):
-            if val and not in_run:
-                in_run = True
-                run_start = x
-            elif not val and in_run:
-                in_run = False
-                runs.append((run_start, x - 1))
-        if in_run:
-            runs.append((run_start, sheet_width - 1))
-
-        if runs:
-            for (s, e) in runs:
-                w_rect = e - s + 1
-                rect = pygame.Rect(s, 0, w_rect, sheet_height)
-                frame = sprite_sheet.subsurface(rect).copy()
-                frames.append(pygame.transform.scale(frame, (width, height)))
-            print(f"Auto-detected and loaded {len(frames)} frames from {filename}")
-            return frames
-
-        print(f"Could not detect frames automatically for {filename}")
-        return None
-
+        for i in range(frame_count):
+            frame_rect = pygame.Rect(i * frame_width, 0, frame_width, sheet_height)
+            frame = sprite_sheet.subsurface(frame_rect)
+            scaled_frame = pygame.transform.scale(frame, (width, height))
+            frames.append(scaled_frame)
+        print(f"Successfully loaded {frame_count} animation frames from {filename}")
+        return frames
     except Exception as e:
         print(f"Error loading animation {filename}: {e}")
         return None
@@ -317,7 +251,7 @@ class Player:
         self.image = image
         self.flying_animation = flying_animation
         self.animation_frame = 0
-        self.animation_speed = 0.8
+        self.animation_speed = 0.2
         if self.image:
             self.rect = self.image.get_rect()
         else:
@@ -340,29 +274,18 @@ class Player:
 
     def draw(self, surface, invincible=False, fly_offset=0):
         draw_rect = self.rect.copy()
-        if invincible:
-            draw_rect.y += fly_offset
-            glow_surface = pygame.Surface((self.rect.width + 20, self.rect.height + 20), pygame.SRCALPHA)
-            glow_color = (255, 215, 0, 100)
-            pygame.draw.ellipse(glow_surface, glow_color, glow_surface.get_rect())
-            surface.blit(glow_surface, (draw_rect.x - 10, draw_rect.y - 10))
-            
-            if self.flying_animation:
-                dt = 16 
-                self.animation_frame += self.animation_speed * dt/1000
-                self.animation_frame %= len(self.flying_animation)
-
-                frame_index = int(self.animation_frame)
-                surface.blit(self.flying_animation[frame_index], draw_rect)
-            elif self.image:
-                surface.blit(self.image, draw_rect)
-            else:
-                pygame.draw.rect(surface, (50, 220, 70), draw_rect)
+        draw_rect.y += fly_offset
+        
+        if invincible and self.flying_animation:
+            frame_index = int(self.animation_frame) % len(self.flying_animation)
+            enlarged_frame = pygame.transform.scale(self.flying_animation[frame_index], (PLAYER_WIDTH * 3, PLAYER_HEIGHT * 3))
+            enlarged_rect = enlarged_frame.get_rect(center=draw_rect.center)
+            surface.blit(enlarged_frame, enlarged_rect)
+            self.animation_frame += self.animation_speed
+        elif self.image:
+            surface.blit(self.image, draw_rect)
         else:
-            if self.image:
-                surface.blit(self.image, draw_rect)
-            else:
-                pygame.draw.rect(surface, (50, 220, 70), draw_rect)
+            pygame.draw.rect(surface, (50, 220, 70), draw_rect)
 
 
 class Obstacle:
@@ -685,11 +608,11 @@ def shop_loop(detector):
                         if total_coins_global >= cost:
                             total_coins_global -= cost
                             unlocked_skins.append(2)
-                            message = "Bought: White Red Car (-50 coins)"
+                            message = "Bought: Red Car (-50 coins)"
                         else:
-                            message = "Not enough coins for White Red (50)"
+                            message = "Not enough coins for Red (50)"
                     else:
-                        message = "Already owned: White Red Car"
+                        message = "Already owned: Red Car"
                 elif event.key == pygame.K_3:
                     cost = 100
                     if 3 not in unlocked_skins:
@@ -726,11 +649,11 @@ def shop_loop(detector):
                     if total_coins_global >= cost:
                         total_coins_global -= cost
                         unlocked_skins.append(2)
-                        message = "Bought: White Red Car (-50 coins)"
+                        message = "Bought: Red Car (-50 coins)"
                     else:
-                        message = "Not enough coins for White Red (50)"
+                        message = "Not enough coins for Red (50)"
                 else:
-                    message = "Already owned: White Red Car"
+                    message = "Already owned: Red Car"
                 last_gesture_time = current_time
             elif gesture == 'four':
                 cost = 100
@@ -761,7 +684,7 @@ def shop_loop(detector):
         
         wr_status = " [OWNED]" if 2 in unlocked_skins else " (50 coins)"
         option2_color = (200, 100, 255) if 2 in unlocked_skins else TEXT_COLOR
-        option2 = font.render(f"3 Fingers - White Red Car{wr_status}", True, option2_color)
+        option2 = font.render(f"3 Fingers - Red Car{wr_status}", True, option2_color)
         screen.blit(option2, (60, line_y + line_spacing))
 
         police_status = " [OWNED]" if 3 in unlocked_skins else " (100 coins)"
@@ -973,6 +896,7 @@ def game_loop(detector, player_img, flying_animation, obstacle_imgs, bg_img, bg_
             new_powerups = []
             for powerup in powerups:
                 if player.rect.colliderect(powerup.rect):
+                    player.animation_frame = 0
                     invincible = True
                     invincible_end_time = current_time + POWERUP_DURATION
                 else:
@@ -1065,9 +989,9 @@ def main():
     car_options = []
 
     player_car_files = [
+        "WR Player Car  Scaled.png",
         "PlayerRedM.png",
         "Blue Player Car.png",
-        "WR Player Car Scaled.png",
         "Police Player Car.png",
     ]
     for filename in player_car_files:
@@ -1110,7 +1034,7 @@ def main():
     if not obstacle_imgs:
         obstacle_imgs = None
 
-    coin_img = load_and_scale_image("Coin2.png", COIN_SIZE, COIN_SIZE)
+    coin_img = load_and_scale_image("coin.png", COIN_SIZE, COIN_SIZE)
 
     if coin_img is None:
         print("Warning: Could not load coin image, using yellow circle")
@@ -1159,7 +1083,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
-
-
