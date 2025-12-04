@@ -1110,7 +1110,7 @@ def main():
     if not obstacle_imgs:
         obstacle_imgs = None
 
-    coin_img = load_and_scale_image("coin.png", COIN_SIZE, COIN_SIZE)
+    coin_img = load_and_scale_image("Coin2.png", COIN_SIZE, COIN_SIZE)
 
     if coin_img is None:
         print("Warning: Could not load coin image, using yellow circle")
@@ -1159,4 +1159,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
